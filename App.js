@@ -6,10 +6,38 @@
  * @flow
  */
 
-import React, {Component} from 'react';
+import React, { useState, useEffect } from 'react';
 import AppNavigator from './src/routes'
-export default class App extends Component {
-  render() {
-    return <AppNavigator/>
-  }
+import { Theme, ThemeContext, REM } from './src/constants'
+import { useThemeSetter } from './src/hooks'
+
+
+
+export default () => {
+
+  const [state, setState] = useState({
+    theme: "Default Palette",
+    reload: true
+  })
+
+  useThemeSetter(() => { setState(state) })
+
+
+  useEffect(() => {
+    if (state.reload) setState({ ...state, reload: false })
+  }, [state.reload])
+
+
+  return (
+    <ThemeContext.Provider value={{
+      state: state, setState: () => {
+        setState({ reload: true })
+      }
+    }}>
+      {!state.reload ? < AppNavigator /> : null}
+    </ThemeContext.Provider>
+  )
+
 }
+
+
